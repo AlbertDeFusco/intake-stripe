@@ -12,7 +12,6 @@ setup(
     description="Intake driver to load Stripe data",
     license="BSD",
     author="Sophia Yang",
-    author_email='Email Address',
     url='https://github.com/sophiamyang/intake-stripe',
     packages=['intake-stripe'],
     entry_points={
