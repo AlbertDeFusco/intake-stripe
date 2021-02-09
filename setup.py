@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 import versioneer
 
 requirements = [
@@ -13,7 +13,7 @@ setup(
     license="BSD",
     author="Sophia Yang",
     url='https://github.com/sophiamyang/intake-stripe',
-    packages=['intake-stripe'],
+    packages=find_packages(),
     entry_points={
         'intake.drivers': [
             'stripe_catalog = intake_stripe.core:StripeCatalog',
