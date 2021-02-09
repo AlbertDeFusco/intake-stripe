@@ -67,13 +67,12 @@ class StripeTableSource(DataSource):
     partition_access = True
     
     def __init__(self, api_key, resource, *kwargs, metadata=None, api_version="2020-08-27"):
-        stripe.api_key = api_key
-        stripe.api_version = api_version
         self.resource = resource
         self._df = None
         self._df_schema = None       
-        self._stripe = StripeAPI(api_key)
-        super(StripeTableSource, self).__init__(metadata=metadata)   
+        self._stripe = StripeAPI(api_key, api_version)
+        super(StripeTableSource, self).__init__(metadata=metadata)   #this sets npartitions to 0 
+        self.npartitions = 1
 
     def _get_schema(self): 
         # get column info
@@ -85,20 +84,11 @@ class StripeTableSource(DataSource):
                       npartitions=1,
                       extra_metadata={})
             
-    def _get_partition(self, i):
+    def _get_partition(self, i=0):
         # get data
         if self._df is None:
             self._df = self._stripe.get_table(resource=self.resource, schema=False)
         return self._df  
-
-    def read(self):
-        # get data
-        if self._df is None:
-            self._df = self._stripe.get_table(resource=self.resource, schema=False)
-        return self._df
-    
-    def to_dask(self):
-        raise NotImplementedError()
 
     def _close(self):
         self._dataframe = None
