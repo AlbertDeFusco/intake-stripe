@@ -52,10 +52,9 @@ def resource_list():
 
 class StripeAPI():
 
-    def __init__(self, api_key, resource, api_version="2020-08-27"):    
-        self.api_key = api_key
-        self.api_version = api_version 
-        self.resource = resource
+    def __init__(self, api_key, api_version="2020-08-27"):    
+        stripe.api_key = api_key
+        stripe.api_version = api_version
 
     def get_table(self, resource, schema):
         return stripe_get_data(resource, schema) 
@@ -66,18 +65,20 @@ class StripeTableSource(DataSource):
     container = 'dataframe'
     version = __version__
     partition_access = True
-
-    def __init__(self, api_key, resource, *kwargs, metadata=None):
-        self.api_key = api_key
-        self.api_version = api_version 
+    
+    def __init__(self, api_key, resource, *kwargs, metadata=None, api_version="2020-08-27"):
+        stripe.api_key = api_key
+        stripe.api_version = api_version
         self.resource = resource
         self._df = None
-        self._stripe = StripeAPI(self.api_key, self.resource)
-        super(StripeTableSource, self).__init__(metadata=metadata)
+        self._df_schema = None       
+        self._stripe = StripeAPI(api_key)
+        super(StripeTableSource, self).__init__(metadata=metadata)   
 
     def _get_schema(self): 
         # get column info
-        self._df_schema = self._stripe.get_table(self.resource, schema=True)
+        if self._df_schema is None:
+            self._df_schema = self._stripe.get_table(resource=self.resource, schema=True)
         return Schema(datashape=None,
                       dtype=self._df_schema,
                       shape=(None, len(self._df_schema.columns)),
@@ -87,13 +88,13 @@ class StripeTableSource(DataSource):
     def _get_partition(self, i):
         # get data
         if self._df is None:
-            self._df = self._stripe.get_table(self.resource, schema=False)
+            self._df = self._stripe.get_table(resource=self.resource, schema=False)
         return self._df  
 
     def read(self):
         # get data
         if self._df is None:
-            self._df = self._stripe.get_table(self.resource, schema=False)
+            self._df = self._stripe.get_table(resource=self.resource, schema=False)
         return self._df
     
     def to_dask(self):
@@ -105,8 +106,11 @@ class StripeTableSource(DataSource):
 class StripeCatalog(Catalog):
     name = 'stripe_catalog'
     
-    def __init__(self, api_key, *kwargs, metadata=None):
+    def __init__(self, api_key, *kwargs, metadata=None, api_version="2020-08-27"):
+        stripe.api_key = api_key
+        stripe.api_version = api_version
         self.api_key = api_key
+        self.api_version = api_version
         super().__init__(name='stripe', metadata=metadata)
     
     def _load(self):
@@ -114,11 +118,12 @@ class StripeCatalog(Catalog):
         for r in resources:
             e = LocalCatalogEntry(
                         name=r,
-                        description=resource, 
+                        description=r, 
                         driver=StripeTableSource,
                         catalog=self,
                         args={
                             'api_key': self.api_key,
+                            'api_version': self.api_version,
                             'resource': r
                         }
                     )
