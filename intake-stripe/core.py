@@ -19,10 +19,10 @@ def stripe_get_data(resource, schema=False, start_date=None, end_date=None, **kw
     
     """
     if start_date:
-        # conver to unix timestamp
+        # convert to unix timestamp
         start_date = int(start_date.timestamp())
     if end_date:
-        # conver to unix timestamp
+        # convert to unix timestamp
         end_date = int(end_date.timestamp())
     if schema: 
         # only read 1 record to get the schema
