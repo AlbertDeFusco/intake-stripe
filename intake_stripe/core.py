@@ -3,8 +3,6 @@ from intake.catalog.local import LocalCatalogEntry
 from intake.source.base import DataSource, Schema
 import stripe
 import pandas as pd
-from datetime import datetime
-import numpy as np
 from . import __version__
 
 def stripe_get_data(resource, schema=False, start_date=None, end_date=None, **kwargs):   

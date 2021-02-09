@@ -20,7 +20,11 @@ setup(
             'stripe_table = intake_stripe.core:StripeTableSource',
             ]
     },
-    install_requires=requirements,
+    install_requires=[
+        'stripe',
+        'intake',
+        'pandas'
+    ],
     keywords='intake-stripe',
     classifiers=[
         'Programming Language :: Python :: 2.7',
