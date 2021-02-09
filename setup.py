@@ -15,9 +15,10 @@ setup(
     url='https://github.com/sophiamyang/intake-stripe',
     packages=['intake-stripe'],
     entry_points={
-        'console_scripts': [
-            'intake-stripe=intake-stripe.cli:cli'
-        ]
+        'intake.drivers': [
+            'stripe_catalog = intake_stripe.core:StripeCatalog',
+            'stripe_table = intake_stripe.core:StripeTableSource',
+            ]
     },
     install_requires=requirements,
     keywords='intake-stripe',
