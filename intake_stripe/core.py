@@ -93,7 +93,7 @@ class StripeTableSource(DataSource):
         
 class StripeCatalog(Catalog):
     name = 'stripe_catalog'
-    
+    version = __version__
     def __init__(self, api_key, *kwargs, metadata=None, api_version="2020-08-27"):
         stripe.api_key = api_key
         stripe.api_version = api_version
