@@ -54,8 +54,8 @@ class StripeAPI():
         stripe.api_key = api_key
         stripe.api_version = api_version
 
-    def get_table(self, resource, schema):
-        return stripe_get_data(resource, schema) 
+    def get_table(self, resource, schema, **kwargs):
+        return stripe_get_data(resource, schema, **kwargs) 
     
     
 class StripeTableSource(DataSource):
@@ -64,13 +64,14 @@ class StripeTableSource(DataSource):
     version = __version__
     partition_access = True
     
-    def __init__(self, api_key, resource, *kwargs, metadata=None, api_version="2020-08-27"):
+    def __init__(self, api_key, resource, metadata=None, api_version="2020-08-27", **kwargs):
         self.resource = resource
         self._df = None
         self._df_schema = None       
         self._stripe = StripeAPI(api_key, api_version)
         super(StripeTableSource, self).__init__(metadata=metadata)   #this sets npartitions to 0 
         self.npartitions = 1
+        self.kwargs = kwargs
 
     def _get_schema(self): 
         # get column info
@@ -85,7 +86,7 @@ class StripeTableSource(DataSource):
     def _get_partition(self, i=0):
         # get data
         if self._df is None:
-            self._df = self._stripe.get_table(resource=self.resource, schema=False)
+            self._df = self._stripe.get_table(resource=self.resource, schema=False, **self.kwargs)
         return self._df  
 
     def _close(self):
