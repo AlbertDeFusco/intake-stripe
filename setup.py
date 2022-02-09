@@ -2,7 +2,10 @@ from setuptools import setup, find_packages
 import versioneer
 
 requirements = [
-    # package requirements go here
+    'intake',
+    'requests',
+    'pandas',
+    'stripe'
 ]
 
 setup(

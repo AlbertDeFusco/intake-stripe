@@ -78,11 +78,11 @@ class StripeTableSource(DataSource):
         if self._df_schema is None:
             self._df_schema = self._stripe.get_table(resource=self.resource, schema=True)
         return Schema(datashape=None,
-                      dtype=self._df_schema,
+                      dtype={n: str(t) for (n, t) in self._df_schema.dtypes.items()},
                       shape=(None, len(self._df_schema.columns)),
                       npartitions=1,
                       extra_metadata={})
-            
+
     def _get_partition(self, i=0):
         # get data
         if self._df is None:
